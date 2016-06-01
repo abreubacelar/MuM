@@ -1223,6 +1223,7 @@ void MuMaterial::DiatonicTranspose( short key, short mode, short targetDegree, s
 	short * modePattern = NULL;
 	long n, j, k;
     int v,i;
+    MuMaterial tempMat;
 	MuNote tempNote;
 	short pitch;
 	short sourceDegree, currDegree, degreeChange;
@@ -1246,7 +1247,9 @@ void MuMaterial::DiatonicTranspose( short key, short mode, short targetDegree, s
 	}
 	
 	targetDegree--;
-	tempNote = GetFirstNote();
+    tempMat = *this;
+    tempMat.Sort(SORT_FIELD_PITCH);
+	tempNote = tempMat.GetFirstNote();
 	pitch = tempNote.Pitch();
 	sourceDegree = Inside( pitch, scale, FULL_SCALE_SIZE );
 	sourceDegree %= NUM_OF_SCALE_DEGREES;
@@ -1873,14 +1876,44 @@ void MuMaterial::MajorTriad(int voiceNumber, float dur)	// [PUBLIC]
 	note.SetDur(dur);
 	note.SetAmp(1.0);
 	
-    note.SetPitch(67);
+    note.SetPitch(60);
 	AddNote(voiceNumber, note);
     note.SetPitch(64);
 	AddNote(voiceNumber, note);
-	note.SetPitch(60);
+	note.SetPitch(67);
 	AddNote(voiceNumber, note);
-	
-	
+}
+
+void MuMaterial::MajorTriadArpeg(float dur)	// [PUBLIC]
+{
+    lastError.Set(MuERROR_NONE);
+    MajorTriadArpeg( 0, dur );
+}
+
+
+void MuMaterial::MajorTriadArpeg(int voiceNumber, float dur)	// [PUBLIC]
+{
+    lastError.Set(MuERROR_NONE);
+    float st = 0.0;
+    
+    MuNote note;
+    note.SetInstr(1);
+    note.SetStart(st);
+    note.SetDur(dur);
+    note.SetAmp(1.0);
+    
+    note.SetPitch(60);
+    AddNote(voiceNumber, note);
+    
+    st += dur;
+    note.SetStart(st);
+    note.SetPitch(64);
+    AddNote(voiceNumber, note);
+    
+    st += dur;
+    note.SetStart(st);
+    note.SetPitch(67);
+    AddNote(voiceNumber, note);
 }
 
 
@@ -1923,6 +1956,37 @@ void MuMaterial::MinorTriad(int voiceNumber, float dur)	// [PUBLIC]
 	AddNote(voiceNumber, note);
 	note.SetPitch(67);
 	AddNote(voiceNumber, note);
+}
+
+void MuMaterial::MinorTriadArpeg(float dur)	// [PUBLIC]
+{
+    lastError.Set(MuERROR_NONE);
+    MinorTriadArpeg( 0, dur );
+}
+
+void MuMaterial::MinorTriadArpeg(int voiceNumber, float dur)	// [PUBLIC]
+{
+    lastError.Set(MuERROR_NONE);
+    float st = 0.0;
+    
+    MuNote note;
+    note.SetInstr(1);
+    note.SetStart(st);
+    note.SetDur(dur);
+    note.SetAmp(1.0);
+    
+    note.SetPitch(60);
+    AddNote(voiceNumber, note);
+    
+    st += dur;
+    note.SetStart(st);
+    note.SetPitch(63);
+    AddNote(voiceNumber, note);
+    
+    st += dur;
+    note.SetStart(st);
+    note.SetPitch(67);
+    AddNote(voiceNumber, note);
 }
 
 void MuMaterial::MinorTriadSplit(float dur)	// [PUBLIC]
@@ -1968,6 +2032,37 @@ void MuMaterial::AugTriad(int voiceNumber, float dur)	// [PUBLIC]
 	AddNote(voiceNumber, note);
 }
 
+void MuMaterial::AugTriadArpeg(float dur)	// [PUBLIC]
+{
+    lastError.Set(MuERROR_NONE);
+    AugTriadArpeg( 0, dur );
+}
+
+void MuMaterial::AugTriadArpeg(int voiceNumber, float dur)	// [PUBLIC]
+{
+    lastError.Set(MuERROR_NONE);
+    float st = 0.0;
+    
+    MuNote note;
+    note.SetInstr(1);
+    note.SetStart(st);
+    note.SetDur(dur);
+    note.SetAmp(1.0);
+    
+    note.SetPitch(60);
+    AddNote(voiceNumber, note);
+    
+    st += dur;
+    note.SetStart(st);
+    note.SetPitch(64);
+    AddNote(voiceNumber, note);
+    
+    st += dur;
+    note.SetStart(st);
+    note.SetPitch(68);
+    AddNote(voiceNumber, note);
+}
+
 void MuMaterial::AugTriadSplit(float dur)	// [PUBLIC]
 {
     lastError.Set(MuERROR_NONE);
@@ -2011,6 +2106,38 @@ void MuMaterial::DimTriad(int voiceNumber, float dur)	// [PUBLIC]
 	AddNote(voiceNumber, note);
 }
 
+void MuMaterial::DimTriadArpeg(float dur)	// [PUBLIC]
+{
+    lastError.Set(MuERROR_NONE);
+    DimTriadArpeg( 0, dur );
+}
+
+void MuMaterial::DimTriadArpeg(int voiceNumber, float dur)	// [PUBLIC]
+{
+    lastError.Set(MuERROR_NONE);
+    float st = 0.0;
+    
+    MuNote note;
+    note.SetInstr(1);
+    note.SetStart(st);
+    note.SetDur(dur);
+    note.SetAmp(1.0);
+    
+    note.SetPitch(60);
+    AddNote(voiceNumber, note);
+    
+    st += dur;
+    note.SetStart(st);
+    note.SetPitch(63);
+    AddNote(voiceNumber, note);
+    
+    st += dur;
+    note.SetStart(st);
+    note.SetPitch(66);
+    AddNote(voiceNumber, note);
+}
+
+
 void MuMaterial::DimTriadSplit(float dur)	// [PUBLIC]
 {
     lastError.Set(MuERROR_NONE);
@@ -2036,36 +2163,29 @@ void MuMaterial::MajorSeventhChord(int voiceNumber, float dur)	// [PUBLIC]
 	note.SetInstr(1);
 	note.SetDur(dur);
 	note.SetAmp(1.0);
-	
     note.SetStart(0.0);
+	
     note.SetPitch(60);
 	AddNote(voiceNumber, note);
-    
-    note.SetStart(1.0);
     note.SetPitch(64);
 	AddNote(voiceNumber, note);
-    
-    note.SetStart(2.0);
     note.SetPitch(67);
 	AddNote(voiceNumber, note);
-
-    note.SetStart(3.0);
     note.SetPitch(71);
 	AddNote(voiceNumber, note);
 }
 
-
-void MuMaterial::MajorScale(float dur)	// [PUBLIC]
+void MuMaterial::MajorScale(float dur, bool addOctave)	// [PUBLIC]
 {
     lastError.Set(MuERROR_NONE);
-	MajorScale( 0, dur );
+	MajorScale( 0, dur, addOctave);
 }
 
-void MuMaterial::MajorScale(int voiceNumber, float dur)	// [PUBLIC]
+void MuMaterial::MajorScale(int voiceNumber, float dur, bool addOctave)	// [PUBLIC]
 {
     lastError.Set(MuERROR_NONE);
-	short scalePattern[7] = {0, 2, 4, 5, 7, 9, 11};
-	int i;
+	short scalePattern[8] = {0, 2, 4, 5, 7, 9, 11, 12};
+	int i,n;
 	float nextStart = 0;
 	
 	MuNote note;
@@ -2074,7 +2194,14 @@ void MuMaterial::MajorScale(int voiceNumber, float dur)	// [PUBLIC]
 	note.SetDur(dur);
 	note.SetAmp(1.0);
 	
-	for(i = 0; i < 7; i++)
+    // if the user wants the first dergree repeated
+    // at the end of the scale...
+    if (addOctave)
+        n = 8;  // we simply let the loop run to the end of the array...
+    else
+        n = 7;  // otherwise we stop one turn short
+    
+	for(i = 0; i < n; i++)
 	{
 		note.SetPitch(60 + scalePattern[i]);
 		AddNote(voiceNumber, note);
@@ -2311,6 +2438,106 @@ void MuMaterial::Decrescendo(int voiceNumber, float max)
     }
 }
 
+void MuMaterial::QuantizeMelodyFor(float tempo)
+{
+    MuNote note;
+    MuParamBlock durations, tempValues;
+    float noteLength, wholePart, currTime;
+    int i,j,k,nVoices,nDurs;
+    long nNotes;
+    float oneBeat = 60.0 / tempo;
+   
+    durations.Init(6);
+    durations[0] = 0.25;
+    durations[1] = 0.33;
+    durations[2] = 0.50;
+    durations[3] = 0.66;
+    durations[4] = 0.75;
+    durations[5] = 1.00;
+    durations.Show();
+    
+    int tam = durations.Num();
+    for(i = 0; i < tam; i++)
+        durations[i] *= oneBeat;
+
+    durations.Show();
+    nDurs = durations.Num();
+    tempValues.Init(nDurs);
+    noteLength = currTime = wholePart = 0;
+    
+    nVoices = NumberOfVoices();
+    
+    for(i = 0; i < nVoices; i++)
+    {
+        // see how many notes there are in this voice...
+        nNotes = NumberOfNotes(i);
+        
+        // remember where the first note starts...
+        note = GetNote(i,0);
+        currTime = note.Start();
+        
+        for(j = 0; j < nNotes; j++)
+        {
+            note = GetNote(i,j);
+            noteLength = note.Dur();
+            
+            // 0) Calculate how many full beats fit inside current duration...
+            int fullBeats = noteLength / oneBeat;
+            
+            // and remove those beats, ...
+            wholePart = (fullBeats * oneBeat);
+            noteLength -= wholePart;
+            
+            // then we try to quantize the remainder...
+            for(k = 0; k < nDurs; k++)
+            {
+                // 1) Get the ratio between noteLength and each reference durations...
+                tempValues[k] = noteLength / durations[k];
+                
+                // 2) The value '1.0' would mean we found a hit. If we can't
+                // find a perfect match, the closest one should be it.
+                // So we subtract each candidate from 1.0 to see how close they
+                // are to the perfect match.
+                tempValues[k] -= 1.0;
+                
+                // 3) We want the smallest value, which is the closest to 1.0;
+                // negative values simply mean they off in the other diretion,
+                // so we get the absolute value (without the negative sign) in
+                // order to compare them all...
+                if(tempValues[k] < 0)
+                    tempValues[k] *= -1;
+            }
+            
+            // now we pick the smallest value...
+            int index = 0;
+            float value = tempValues[index];
+            
+            for(k = 1; k < nDurs; k++)
+            {
+                if(tempValues[k] < value)
+                {
+                    value = tempValues[k];
+                    index = k;
+                }
+            }
+            
+            // 'index' points to the element in the 'durations' array
+            // which has the smallest ratio diference when compared to
+            // the tested note duration, so we use it to access the
+            // correponding quantized duration, to which
+            // we add the whole beats we removed in the beginning...
+            noteLength = durations[index] + wholePart;
+            
+            // Then we fix the note to use the quantized duration and start time...
+            note.SetStart(currTime);
+            note.SetDur(noteLength);
+            // and reinsert it...
+            SetNote(i, j, note);
+            currTime += noteLength;
+        }
+    }
+}
+
 void MuMaterial::RemoveBlankNotes(int voiceNumber)
 {
     lastError.Set(MuERROR_NONE);
@@ -2418,7 +2645,7 @@ string MuMaterial::Orchestra(void)	// [PUBLIC]
     orc << "ifreq = cpspch(p4)" << endl;
     orc << "itable = 1" << endl;
     orc << endl;
-    orc << "kamp linen 1.0, 0.05, p3, (0.8 * p3)" << endl;
+    orc << "kamp linen 1.0, 0.05, p3, (0.9 * p3)" << endl;
     orc << "asig oscil iamp, ifreq, itable" << endl;
     orc << "aout = kamp * asig" << endl;
     orc << "outs aout, aout" << endl;
@@ -2463,7 +2690,7 @@ string MuMaterial::Orchestra(void)	// [PUBLIC]
     orc << "ifreq = cpspch(p4)" << endl;
     orc << "itable = 4" << endl;
     orc << endl;
-    orc << "kamp linen 1.0, 0.06, p3, (0.4 * p3)" << endl;
+    orc << "kamp linen 1.0, 0.03, p3, (0.4 * p3)" << endl;
     orc << "asig oscil iamp, ifreq, itable" << endl;
     orc << "aout = kamp * asig" << endl;
     orc << "outs aout, aout" << endl;

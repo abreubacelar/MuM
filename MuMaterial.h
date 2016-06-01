@@ -62,8 +62,6 @@ const short FULL_SCALE_SIZE = NUM_OF_SCALE_DEGREES * NUM_OF_OCTAVES;
 const short OCTAVE_IN_DEGREES = 8;
 const short MAJOR_MODE = 0;
 const short MINOR_MODE = 1;
-const short ASCENDING = 1; 
-const short DESCENDING = -1;
 
 // NOTES
 const short C_NAT = 0;
@@ -863,12 +861,14 @@ class MuMaterial
 	
 	/**
 	 * @brief Adds note 'inNote' to voice '0'
-	 *
+    
 	 * @details
 	 * AddNote() adds note 'inNote' to voice '0'. If material is empty, voice '0' is 
-	 * automatically  created. The note is inserted at the correct point in time
-	 * within the voice, according to its start time.
-	 *
+     * automatically  created.Notes are stored in chronological order, so 'inNote' is
+     * inserted at the correct point in time within the voice, according to its
+     * start time. If there are other notes with the exact same starting time, 'inNote'
+     * is always inserted after them.
+ 	 *
 	 * @param
 	 * inNote (MuNote) - note object to be added
 	 *
@@ -879,10 +879,13 @@ class MuMaterial
 	 * @brief Adds note 'inNote' to voice 'voiceNumber'
 	 *
 	 * @details
-	 * AddNote() adds note 'inNote' to voice 'voiceNumber'. The note is inserted at 
-	 * the correct point in time within the voice, according to its start time.
-	 * If material is empty, or voiceNumber  is not a valid voice index number, 
-	 * an error is issued and AddNote() terminates. 
+	 * AddNote() adds note 'inNote' to voice 'voiceNumber'. If material is empty, or 
+     * 'voiceNumber'  is not a valid voice index number, an error is issued and 
+     * AddNote() terminates. Notes are stored in chronological order, so 'inNote' is
+     * inserted at the correct point in time within the voice, according to its
+     * start time. If there are other notes with the exact same starting time, 'inNote'
+     * is always inserted after them.
+
 	 *
 	 * @param
 	 * voiceNumber (int) - voice index
@@ -1008,18 +1011,15 @@ class MuMaterial
 	 * DiatonicTranspose() transposes entire material by degree, that is respecting 
 	 * the intervals found in the key signature. User code provides a key 
 	 * (MIDI note number) and mode (MAJOR_MODE or MINOR_MODE). DiatonicTranspose() 
-	 * translates each note in material to scale degrees. If notes do not belong to 
-	 * the requested key/mode, they are shifted down to the nearest scale degree. 
-	 * Degrees are then transposed based on the "degree distance" between the 
-	 * first note of material and the requested degree. After "degree transposition", 
-	 * altered notes are reshifted in the original direction. This retains the correct 
-	 * accidentals in the same scale degrees as the original. Material is always 
-	 * transposed up from original, moving withing one octave. If user needs to 
-	 * transpose material to the requested degree but in another octave, this can be 
-	 * achieved by providing the key reference in the desired ocatve. 
-	 * For example, 48, 60 and 72 used as key values, all produce a C scale, 
-	 * but each one in a different octave.	 
-	 *
+	 * translates each note in material to scale degrees. Degrees are then transposed 
+     * based on the "degree  distance" between the lowest note of material and the 
+     * requested degree of transposition. Direction of transposition
+     * can be set with the 'direction' argument (possible values bellow).
+     * If any notes within material do not belong to the requested key/mode, 
+     * DiatonicTranspose() issues an error and returns. This may happen at any point
+     * along the transposition process, therefore it is advisable to allways check
+     * the materials last error, before proceding after using DiatonicTranspose().
+     *
 	 * @param
 	 * key (short) - key center (a MIDI pitch number)
 	 * @param
@@ -1027,7 +1027,7 @@ class MuMaterial
 	 * @param
 	 * degree (short) - target scale degree (degree to transpose to)
 	 * @param
-	 * direction (short) - ascending or descending
+	 * direction (short) - ASCENDING or DESCENDING
 	 *
 	 **/	
 	void DiatonicTranspose( short key, short mode, short degree, short direction );
@@ -1374,6 +1374,40 @@ class MuMaterial
 	 **/	
 	void MajorTriad(int voiceNumber, float dur);
     
+    /**
+     *
+     * @brief
+     * Fills voice '0' with arpeggiated major triad in time 0
+     *
+     * @details
+     * Builds a major triad from middle C within material. The first note of
+     * the chord starts at time 0 and subsequent notes are placed melodically from
+     * that point on. All notes have a duration of 'dur'.
+     *
+     * @param
+     * dur (float) - duration in seconds
+     *
+     **/
+    void MajorTriadArpeg(float dur);
+    
+    /**
+     *
+     * @brief
+     * Fills requested voice with arpeggiated major triad in time 0 of requested voice
+     *
+     * @details
+     * Builds a major triad from middle C within requested voice. The first note of
+     * the chord starts at time 0 and subsequent notes are placed melodically from
+     * that point on. All notes have a duration of 'dur'.
+     *
+     * @param
+     * voiceNumber (int) - voice index
+     * @param
+     * dur (float) - duration in seconds
+     *
+     **/
+    void MajorTriadArpeg(int voiceNumber, float dur);
+    
 	/**
 	 *
 	 * @brief
@@ -1422,6 +1456,40 @@ class MuMaterial
 	 **/
 	void MinorTriad(int voiceNumber, float dur);
     
+    /**
+     *
+     * @brief
+     * Fills voice '0' with arpeggiated minor triad in time 0
+     *
+     * @details
+     * Builds a minor triad from middle C within material. The first note of
+     * the chord starts at time 0 and subsequent notes are placed melodically from
+     * that point on. All notes have a duration of 'dur'.
+     *
+     * @param
+     * dur (float) - duration in seconds
+     *
+     **/
+    void MinorTriadArpeg(float dur);
+    
+    /**
+     *
+     * @brief
+     * Fills requested voice with arpeggiated minor triad in time 0 of requested voice
+     *
+     * @details
+     * Builds a major minor from middle C within requested voice. The first note of
+     * the chord starts at time 0 and subsequent notes are placed melodically from
+     * that point on. All notes have a duration of 'dur'.
+     *
+     * @param
+     * voiceNumber (int) - voice index
+     * @param
+     * dur (float) - duration in seconds
+     *
+     **/
+    void MinorTriadArpeg(int voiceNumber, float dur);
+
 	/**
 	 *
 	 * @brief
@@ -1470,6 +1538,40 @@ class MuMaterial
 	 **/
 	void AugTriad(int voiceNumber, float dur);
     
+    /**
+     *
+     * @brief
+     * Fills voice '0' with arpeggiated augmented triad in time 0
+     *
+     * @details
+     * Builds a augmented triad from middle C within material. The first note of
+     * the chord starts at time 0 and subsequent notes are placed melodically from
+     * that point on. All notes have a duration of 'dur'.
+     *
+     * @param
+     * dur (float) - duration in seconds
+     *
+     **/
+    void AugTriadArpeg(float dur);
+    
+    /**
+     *
+     * @brief
+     * Fills requested voice with arpeggiated augmented triad in time 0 of requested voice
+     *
+     * @details
+     * Builds a augmented triad from middle C within requested voice. The first note of
+     * the chord starts at time 0 and subsequent notes are placed melodically from
+     * that point on. All notes have a duration of 'dur'.
+     *
+     * @param
+     * voiceNumber (int) - voice index
+     * @param
+     * dur (float) - duration in seconds
+     *
+     **/
+    void AugTriadArpeg(int voiceNumber, float dur);
+    
 	/**
 	 *
 	 * @brief
@@ -1486,6 +1588,7 @@ class MuMaterial
 	 *
 	 **/
 	void AugTriadSplit(float dur);
+    
     
 	/**
 	 *
@@ -1519,6 +1622,40 @@ class MuMaterial
 	 **/
 	void DimTriad(int voiceNumber, float dur);
 	
+    /**
+     *
+     * @brief
+     * Fills voice '0' with arpeggiated diminished triad in time 0
+     *
+     * @details
+     * Builds a diminished triad from middle C within material. The first note of
+     * the chord starts at time 0 and subsequent notes are placed melodically from
+     * that point on. All notes have a duration of 'dur'.
+     *
+     * @param
+     * dur (float) - duration in seconds
+     *
+     **/
+    void DimTriadArpeg(float dur);
+    
+    /**
+     *
+     * @brief
+     * Fills requested voice with arpeggiated diminished triad in time 0 of requested voice
+     *
+     * @details
+     * Builds a diminished triad from middle C within requested voice. The first note of
+     * the chord starts at time 0 and subsequent notes are placed melodically from
+     * that point on. All notes have a duration of 'dur'.
+     *
+     * @param
+     * voiceNumber (int) - voice index
+     * @param
+     * dur (float) - duration in seconds
+     *
+     **/
+    void DimTriadArpeg(int voiceNumber, float dur);
+    
 	/**
 	 *
 	 * @brief
@@ -1550,7 +1687,6 @@ class MuMaterial
 	 * dur (float) - duration in seconds
 	 *
 	 **/
-
     void MajorSeventhChord(int voiceNumber, float dur);	// [PUBLIC]
 	
 	// Scales
@@ -1569,7 +1705,7 @@ class MuMaterial
 	 * dur (float) - duration in seconds
 	 *
 	 **/	
-	void MajorScale(float dur);
+	void MajorScale(float dur, bool addOctave = false);
 	
 	/**
 	 *
@@ -1587,7 +1723,7 @@ class MuMaterial
 	 * dur (float) - duration in seconds
 	 *
 	 **/		
-	void MajorScale(int voiceNumber, float dur);
+	void MajorScale(int voiceNumber, float dur, bool addOctave = false);
     
 	/**
 	 *
@@ -1849,6 +1985,32 @@ class MuMaterial
 	 *
 	 **/
     void Decrescendo(int voiceNumber, float max);
+    
+    /**
+     *
+     * @brief
+     * Quantizes durations and start times to conform to a  given tempo
+     *
+     * @details
+     * QuantizeMelodyFor() finds the closest duration value in a list of
+     * quantized fractions of a beat for each note in the material, and changes
+     * the note's start time and duration accordingly. 
+     *
+     * IMPORTANT! This algorithm only works with melodic materials.
+     * Also, every rest should be featured within the voices as notes of
+     * invalid (0) pitch and amplitude. If material contains more than
+     * one voice, they should be loaded into separate voices withing the
+     * material. Failure to do so would most likely result in
+     * undesired behaviour.
+     *
+     * @param
+     *
+     * tempo (MuParamBlock &) - the assumed tempo for the melody(ies) contained
+     * in the material. If the wrong tempo is provided, quantization results in
+     * wrong rythms.
+     *
+     **/
+    void QuantizeMelodyFor(float tempo);
     
     /**
 	 *
